@@ -40,19 +40,20 @@ namespace EGC_Proiect
                 else
                     this.WindowState = WindowState.Fullscreen;
 
-            // La apasarea sagetii spre stanga (LEFT) imaginea se va deplasa cu 100 de pixeli spre stanga pana iese din lungimea ferestrei
+            // La apasarea sagetii spre stanga (LEFT) actualizeaza pozitia imaginii cu 100 de pixeli spre stanga pana iese din lungimea ferestrei
             if (e.Key == Key.Left && xpixeli > -Width)
             {
                 xpixeli = xpixeli - 100;
-                GL.Viewport(xpixeli, ypixeli, Width, Height);
+                
 
             }
-            // La apasarea sagetii spre dreapta (RIGHT) imaginea se va deplasa cu 100 de pixeli spre dreapta pana iese din lungimea ferestrei
+            // La apasarea sagetii spre dreapta (RIGHT) actualizeaza pozitia imaginii cu 100 de pixeli spre dreapta pana iese din lungimea ferestrei
             if (e.Key == Key.Right && xpixeli < Width)
             {
                 xpixeli = xpixeli + 100;
-                GL.Viewport(xpixeli, ypixeli, Width, Height);
             }
+            // Modifica viewport-ul cu actualizarile in functie de pozitie
+            GL.Viewport(xpixeli, ypixeli, Width, Height);
         }
 
         protected override void OnLoad(EventArgs e)
