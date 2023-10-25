@@ -21,12 +21,14 @@ namespace EGC_Proiect
     {
         private int xpixeli = 0, ypixeli = 0;
         private int previousMouseX, previousMouseY;
+
         // Constructor.
         public SimpleWindow() : base(800, 600)
         {
             KeyDown += Keyboard_KeyDown;
         }
         // Laborator 2 - Exercitiul 2
+        // La apasarea sagestiilor stanga, respectiv dreapta, figura se va deplasa conform directiei
         void Keyboard_KeyDown(object sender, KeyboardKeyEventArgs e)
         {
             if (e.Key == Key.Escape)
@@ -37,25 +39,19 @@ namespace EGC_Proiect
                     this.WindowState = WindowState.Normal;
                 else
                     this.WindowState = WindowState.Fullscreen;
-            // La apasarea sagetii spre stanga (LEFT) imaginea se va deplasa cu 100 de pixeli spre stanga
-            if (e.Key == Key.Left)
+
+            // La apasarea sagetii spre stanga (LEFT) imaginea se va deplasa cu 100 de pixeli spre stanga pana iese din lungimea ferestrei
+            if (e.Key == Key.Left && xpixeli > -Width)
             {
                 xpixeli = xpixeli - 100;
-                GL.Viewport(xpixeli, 0, Width, Height);
+                GL.Viewport(xpixeli, ypixeli, Width, Height);
 
             }
-            // La apasarea sagetii spre dreapta (RIGHT) imaginea se va deplasa cu 100 de pixeli spre dreapta
-            if (e.Key == Key.Right)
+            // La apasarea sagetii spre dreapta (RIGHT) imaginea se va deplasa cu 100 de pixeli spre dreapta pana iese din lungimea ferestrei
+            if (e.Key == Key.Right && xpixeli < Width)
             {
                 xpixeli = xpixeli + 100;
-                GL.Viewport(xpixeli, 0, Width, Height);
-            }
-
-            MouseState mouse = Mouse.GetState();
-            if (mouse[MouseButton.Left])
-            {
-                base.OnResize(e);
-                GL.Viewport(0, 0, Width, Height);
+                GL.Viewport(xpixeli, ypixeli, Width, Height);
             }
         }
 
@@ -72,53 +68,45 @@ namespace EGC_Proiect
             GL.LoadIdentity();
             GL.Ortho(-1.0, 1.0, -1.0, 1.0, 0.0, 4.0);
         }
+        // Laborator 2 - Exercitiul 2
+        // La miscarea mouse-ului figura se va deplasa conform directiei
         protected void Move_with_Mouse()
         {
             // Obține poziția curentă a mouse-ului
             int currentMouseX = Mouse.GetCursorState().X;
             int currentMouseY = Mouse.GetCursorState().Y;
+
             // Calculează schimbarea poziției mouse-ului
             int diferenceX = currentMouseX - previousMouseX;
             int diferenceY = currentMouseY - previousMouseY;
-            // Verifică direcția mișcării
-            if (currentMouseX == previousMouseX)
+
+            // actualizeaza pozitia spre dreapta pana iese din lungimea ferestrei
+            //Actualizează poziția pe axa X
+            if (diferenceX > 10 && xpixeli < Width)
             {
-                GL.Viewport(xpixeli, ypixeli, Width, Height);
+                xpixeli += 10;
             }
-            else
+            // actualizeaza pozitia spre stanga pana iese din lungimea ferestrei
+            else if (diferenceX < 0 && xpixeli > -Width)
             {
-                if (diferenceX > 10)
-                {
-                    xpixeli = xpixeli + 10;
-                    GL.Viewport(xpixeli, ypixeli, Width, Height);
-                    previousMouseX = currentMouseX;
-                }
-                if (diferenceX < 0)
-                {
-                    xpixeli = xpixeli - 10;
-                    GL.Viewport(xpixeli, ypixeli, Width, Height);
-                    previousMouseX = currentMouseX;
-                }
+                xpixeli -= 10;
             }
-            if (currentMouseY == previousMouseY)
+            //Actualizează poziția pe axa Y
+            // actualizeaza pozitia in jos pana iese din inaltimea ferestrei
+            if (diferenceY > 10 && ypixeli > -Height)
             {
-                GL.Viewport(xpixeli, ypixeli, Width, Height);
+                ypixeli -= 10;
             }
-            else
+            // actualizeaza pozitia in sus pana iese din inaltimea ferestrei
+            else if (diferenceY < 0 && ypixeli < Height)
             {
-                if (diferenceY > 10)
-                {
-                    ypixeli = ypixeli + 10;
-                    GL.Viewport(xpixeli, ypixeli, Width, Height);
-                    previousMouseY = currentMouseY;
-                }
-                if (diferenceX < 0)
-                {
-                    ypixeli = ypixeli - 10;
-                    GL.Viewport(xpixeli, ypixeli, Width, Height);
-                    previousMouseY = currentMouseY;
-                }
+                ypixeli += 10;
             }
+            // Modifica viewport-ul cu actualizarile in functie de pozitie
+            GL.Viewport(xpixeli, ypixeli, Width, Height);
+            // Actualizeaza poziția anterioară a mouse-ului cu cea curenta
+            previousMouseX = currentMouseX;
+            previousMouseY = currentMouseY;
 
         }
         protected override void OnUpdateFrame(FrameEventArgs e)
